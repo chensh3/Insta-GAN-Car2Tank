@@ -446,7 +446,14 @@ class UnetSkipConnectionBlock(nn.Module):
             return torch.cat([x, self.model(x)], 1)
 
 
+from torchvision import models
+
+
+# Load pretrained ResNet50
+Modelresnet50 = models.resnet50(weights=models.ResNet50_Weights.DEFAULT)
+
 # Defines the PatchGAN discriminator with the specified arguments.
+
 class NLayerDiscriminator(nn.Module):
     def __init__(self, input_nc, ndf=64, n_layers=3, norm_layer=nn.BatchNorm2d, use_sigmoid=False):
         super(NLayerDiscriminator, self).__init__()
