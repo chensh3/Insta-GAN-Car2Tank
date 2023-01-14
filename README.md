@@ -67,6 +67,9 @@ For each image (e.g., '0001.png'), corresponding masks for each instance (e.g., 
 python train.py --dataroot ./datasets/jeans2skirt_ccp --model insta_gan --name jeans2skirt_ccp_instagan --loadSizeH 330 --loadSizeW 220 --fineSizeH 300 --fineSizeW 200 --niter 400 --niter_decay 200
 python train.py --dataroot ./datasets/pants2skirt_mhp --model insta_gan --name pants2skirt_mhp_instagan --loadSizeH 270 --loadSizeW 180 --fineSizeH 240 --fineSizeW 160
 python train.py --dataroot ./datasets/shp2gir_coco --model insta_gan --name shp2gir_coco_instagan --loadSizeH 220 --loadSizeW 220 --fineSizeH 200 --fineSizeW 200
+python train.py --dataroot ./datasets/car2tank --model insta_gan --name car2tank_instagan --loadSizeH 64 --loadSizeW 64 --fineSizeH 64 --fineSizeW 64 --serial_batches
+python train.py --dataroot ./datasets/car2tank --model insta_gan --name car2tank_instagan --loadSizeH 128 --loadSizeW 128 --fineSizeH 128 --fineSizeW 128  --serial_batches
+
 ```
 
 - To view training results and loss plots, run `python -m visdom.server` and click the URL http://localhost:8097.
@@ -82,6 +85,9 @@ python train.py --dataroot ./datasets/shp2gir_coco --model insta_gan --name shp2
 python test.py --dataroot ./datasets/jeans2skirt_ccp --model insta_gan --name jeans2skirt_ccp_instagan --loadSizeH 300 --loadSizeW 200 --fineSizeH 300 --fineSizeW 200
 python test.py --dataroot ./datasets/pants2skirt_mhp --model insta_gan --name pants2skirt_mhp_instagan --loadSizeH 240 --loadSizeW 160 --fineSizeH 240 --fineSizeW 160 --ins_per 2 --ins_max 20
 python test.py --dataroot ./datasets/shp2gir_coco --model insta_gan --name shp2gir_coco_instagan --loadSizeH 200 --loadSizeW 200 --fineSizeH 200 --fineSizeW 200 --ins_per 2 --ins_max 20
+python test.py --dataroot ./datasets/car2tank --model insta_gan --name car2tank_instagan --loadSizeH 64 --loadSizeW 64 --fineSizeH 64 --fineSizeW 64 --serial_batches
+python test.py --dataroot ./datasets/car2tank --model insta_gan --name car2tank_instagan --loadSizeH 128 --loadSizeW 128 --fineSizeH 128 --fineSizeW 128 --serial_batches
+
 ```
 - The test results will be saved to a html file here: `./results/experiment_name/latest_test/index.html`.
 

@@ -5,7 +5,8 @@ import ntpath
 import time
 from . import util
 from . import html
-from scipy.misc import imresize
+from PIL import Image
+# from scipy.misc import imresize
 
 if sys.version_info[0] == 2:
     VisdomExceptionBase = Exception
@@ -24,13 +25,16 @@ def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256):
 
     for label, im_data in visuals.items():
         im = util.tensor2im(im_data)
-        image_name = '%s_%s.png' % (name, label)
+        image_name = '%s_%s.jpg' % (name, label)
         save_path = os.path.join(image_dir, image_name)
         h, w, _ = im.shape
         if aspect_ratio > 1.0:
-            im = imresize(im, (h, int(w * aspect_ratio)), interp='bicubic')
+            # im = imresize(im, (h, int(w * aspect_ratio)), interp='bicubic')
+            im = np.array(Image.fromarray(obj=im).resize(size=(h, int(w * aspect_ratio)), resample=Image.BICUBIC))
+            # im = imresize(im, (h, int(w * aspect_ratio)), interp='bicubic')
         if aspect_ratio < 1.0:
-            im = imresize(im, (int(h / aspect_ratio), w), interp='bicubic')
+            # im = imresize(im, (int(h / aspect_ratio), w), interp='bicubic')
+            im = np.array(Image.fromarray(obj=im).resize(size=(int(h / aspect_ratio), w), resample=Image.BICUBIC))
         util.save_image(im, save_path)
 
         ims.append(image_name)

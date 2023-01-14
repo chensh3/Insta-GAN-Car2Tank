@@ -3,8 +3,36 @@ from options.train_options import TrainOptions
 from data import CreateDataLoader
 from models import create_model
 from util.visualizer import Visualizer
+from torch import rand
+import time
+from os import popen
+def check_mem():
+    mem = popen(
+        '"nvidia-smi" --query-gpu=memory.total,memory.used --format=csv,nounits,noheader').read().split(
+        ",")
+
+    return mem
+
+
+def memory_save():
+    total, used = check_mem()
+
+    total = int(total)
+    used = int(used)
+
+    max_mem = int(total * 0.5)
+    block_mem = max_mem - used
+
+    x = rand((256, 1024, block_mem),device="cuda")
+    x = rand((2, 2),device="cuda")
+
+    # do things here
 
 if __name__ == '__main__':
+
+    # torch.cuda.empty_cache()
+    # torch.cuda.set_per_process_memory_fraction(1., 0)
+
     opt = TrainOptions().parse()
     data_loader = CreateDataLoader(opt)
     dataset = data_loader.load_data()
@@ -16,7 +44,13 @@ if __name__ == '__main__':
     visualizer = Visualizer(opt)
     total_steps = 0
 
+    # memory_save()
+
     for epoch in range(opt.epoch_count, opt.niter + opt.niter_decay + 1):
+        t = time.localtime()
+        current_time = time.strftime("%D %H:%M:%S", t)
+        print('start of epoch %d / %d at %s' %
+              (epoch, opt.niter + opt.niter_decay,current_time))
         epoch_start_time = time.time()
         iter_data_time = time.time()
         epoch_iter = 0
@@ -52,7 +86,8 @@ if __name__ == '__main__':
             print('saving the model at the end of epoch %d, iters %d' % (epoch, total_steps))
             model.save_networks('latest')
             model.save_networks(epoch)
-
-        print('End of epoch %d / %d \t Time Taken: %d sec' %
-              (epoch, opt.niter + opt.niter_decay, time.time() - epoch_start_time))
+        t = time.localtime()
+        current_time = time.strftime("%D %H:%M:%S", t)
+        print('End of epoch %d / %d \t Time Taken: %d sec \t current time: %s' %
+              (epoch, opt.niter + opt.niter_decay, time.time() - epoch_start_time,current_time))
         model.update_learning_rate()

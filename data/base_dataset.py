@@ -1,3 +1,4 @@
+import torch
 import torch.utils.data as data
 from PIL import Image
 import torchvision.transforms as transforms
@@ -28,7 +29,9 @@ def get_transform(opt):
         osize = [opt.loadSizeH, opt.loadSizeW]
         fsize = [opt.fineSizeH, opt.fineSizeW]
         transform_list.append(transforms.Resize(osize, Image.BICUBIC))
-        transform_list.append(transforms.RandomCrop(fsize))
+        # transform_list.append(transforms.RandomCrop(fsize))
+        transform_list.append(temp)
+
     # Original CycleGAN code
     # if opt.resize_or_crop == 'resize_and_crop':
     #     osize = [opt.loadSize, opt.loadSize]
@@ -49,14 +52,56 @@ def get_transform(opt):
     else:
         raise ValueError('--resize_or_crop %s is not a valid option.' % opt.resize_or_crop)
 
-    if opt.isTrain and not opt.no_flip:
-        transform_list.append(transforms.RandomHorizontalFlip())
+    # if opt.isTrain and not opt.no_flip:
+    #     transform_list.append(transforms.RandomHorizontalFlip())
+    #     transform_list.append(temp)
 
     transform_list += [transforms.ToTensor(),
+                       temp,
                        transforms.Normalize((0.5, 0.5, 0.5),
-                                            (0.5, 0.5, 0.5))]
+                                            (0.5, 0.5, 0.5))
+                       ]
     return transforms.Compose(transform_list)
 
+def temp(x):
+    # return x
+    if torch.is_tensor(x):
+        # print("help im in temp! - tensor",x.size())
+        if transforms.functional.get_image_num_channels(x)!=3:
+        # if x.size!=[3,200,200]
+            import numpy as np
+            from torchvision.utils import save_image
+            image = np.zeros((3,x.shape[1],x.shape[2]))
+            # assert image.shape[2]==128
+            # print(x.size(),image.shape)
+            # print("sum1",image.sum(),x.sum())
+            for c in range(3):
+                image[c]=x
+            # print("sum2", image.sum(), x.sum())
+            # image.save("image.png")
+            # print(x.size(), image.shape)
+            image = torch.from_numpy(image).float()
+            # print(x.size(), image.size())
+
+            # im = Image.fromarray(image)
+            # im.save("image.png")
+            # save_image(x,"x.png")
+            # save_image(image,"image.png")
+            # save_image(image,"image.png")
+            return image
+
+
+        #
+        # images.shape  # torch.Size([64,3,28,28])
+        # img1 = images[0]  # torch.Size([3,28,28]
+        # # img1 = img1.numpy() # TypeError: tensor or list of tensors expected, got <class 'numpy.ndarray'>
+        # save_image(img1, 'img1.png')
+    else:
+        # print("help im in temp! - else",x.size,type(x))
+        pass
+
+
+    return x
 
 # just modify the width and height to be multiple of 4
 def __adjust(img):

@@ -2,7 +2,7 @@ import os
 import torch
 from collections import OrderedDict
 from . import networks
-
+torch.cuda.empty_cache()
 
 class BaseModel():
 
