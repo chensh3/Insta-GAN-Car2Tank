@@ -6,6 +6,8 @@ from util.visualizer import Visualizer
 from torch import rand
 import time
 from os import popen
+
+
 def check_mem():
     mem = popen(
         '"nvidia-smi" --query-gpu=memory.total,memory.used --format=csv,nounits,noheader').read().split(
@@ -23,24 +25,16 @@ def memory_save():
     max_mem = int(total * 0.5)
     block_mem = max_mem - used
 
-    x = rand((256, 1024, block_mem),device="cuda")
-    x = rand((2, 2),device="cuda")
+    x = rand((256, 1024, block_mem), device="cuda")
+    x = rand((2, 2), device="cuda")
 
     # do things here
 
-if __name__ == '__main__':
 
-    # torch.cuda.empty_cache()
-    # torch.cuda.set_per_process_memory_fraction(1., 0)
-
-    opt = TrainOptions().parse()
-    data_loader = CreateDataLoader(opt)
-    dataset = data_loader.load_data()
-    dataset_size = len(data_loader)
-    print('#training images = %d' % dataset_size)
-
+def main(opt, dataset, dataset_size):
     model = create_model(opt)
     model.setup(opt)
+    # opt.model.
     visualizer = Visualizer(opt)
     total_steps = 0
 
@@ -50,7 +44,7 @@ if __name__ == '__main__':
         t = time.localtime()
         current_time = time.strftime("%D %H:%M:%S", t)
         print('start of epoch %d / %d at %s' %
-              (epoch, opt.niter + opt.niter_decay,current_time))
+              (epoch, opt.niter + opt.niter_decay, current_time))
         epoch_start_time = time.time()
         iter_data_time = time.time()
         epoch_iter = 0
@@ -89,5 +83,48 @@ if __name__ == '__main__':
         t = time.localtime()
         current_time = time.strftime("%D %H:%M:%S", t)
         print('End of epoch %d / %d \t Time Taken: %d sec \t current time: %s' %
-              (epoch, opt.niter + opt.niter_decay, time.time() - epoch_start_time,current_time))
+              (epoch, opt.niter + opt.niter_decay, time.time() - epoch_start_time, current_time))
         model.update_learning_rate()
+
+
+if __name__ == '__main__':
+    """
+    grid search command:
+    python train.py --dataroot ./datasets/car2tank --model insta_gan --name car2tank_instagan --loadSizeH 128 --loadSizeW 128 --lamb
+da_A 0 --lambda_B 0 --lambda_idt 0 --lambda_ctx 0 --display_env 0_0_0 --checkpoints_dir ./checkpoints/0_0_0 --serial_batches
+
+    """
+    from grid_search import list_options
+
+    grid_search = False
+    # torch.cuda.empty_cache()
+    # torch.cuda.set_per_process_memory_fraction(1., 0)
+
+    opt = TrainOptions().parse()
+    data_loader = CreateDataLoader(opt)
+    dataset = data_loader.load_data()
+    dataset_size = len(data_loader)
+    print('#training images = %d' % dataset_size)
+    # print(opt.lambda_A)
+    # main(opt,dataset,dataset_size)
+    if grid_search:
+        for dict_option in list_options:
+            print(
+                f"was opt variables: A= {opt.lambda_A}, B= {opt.lambda_B}, idt= {opt.lambda_idt}, ctx= {opt.lambda_ctx}")
+            opt.lambda_A = dict_option["lambda_A"]
+            opt.lambda_B = dict_option["lambda_A"]
+            opt.lambda_idt = dict_option["lambda_idt"]
+            opt.lambda_ctx = dict_option["lambda_ctx"]
+            opt.display_env = f"{dict_option['lambda_A']}_{dict_option['lambda_idt']}_{dict_option['lambda_ctx']}"
+            opt.checkpoints_dir = f"./checkpoints/{dict_option['lambda_A']}_{dict_option['lambda_idt']}_{dict_option['lambda_ctx']}"
+
+            print(
+                f"changes opt variables: A= {opt.lambda_A}, B= {opt.lambda_B}, idt= {opt.lambda_idt}, ctx= {opt.lambda_ctx}")
+            data_loader = CreateDataLoader(opt)
+            dataset = data_loader.load_data()
+            dataset_size = len(data_loader)
+            print('#training images = %d' % dataset_size)
+            main(opt, dataset, dataset_size)
+
+    else:
+        main(opt, dataset, dataset_size)
