@@ -64,9 +64,9 @@ For each image (e.g., '0001.png'), corresponding masks for each instance (e.g., 
 
 - Train a model:
 ```
-python train.py --dataroot ./datasets/jeans2skirt_ccp --model insta_gan --name jeans2skirt_ccp_instagan --loadSizeH 330 --loadSizeW 220 --fineSizeH 300 --fineSizeW 200 --niter 400 --niter_decay 200
-python train.py --dataroot ./datasets/pants2skirt_mhp --model insta_gan --name pants2skirt_mhp_instagan --loadSizeH 270 --loadSizeW 180 --fineSizeH 240 --fineSizeW 160
-python train.py --dataroot ./datasets/shp2gir_coco --model insta_gan --name shp2gir_coco_instagan --loadSizeH 220 --loadSizeW 220 --fineSizeH 200 --fineSizeW 200
+# python train.py --dataroot ./datasets/jeans2skirt_ccp --model insta_gan --name jeans2skirt_ccp_instagan --loadSizeH 330 --loadSizeW 220 --fineSizeH 300 --fineSizeW 200 --niter 400 --niter_decay 200
+# python train.py --dataroot ./datasets/pants2skirt_mhp --model insta_gan --name pants2skirt_mhp_instagan --loadSizeH 270 --loadSizeW 180 --fineSizeH 240 --fineSizeW 160
+# python train.py --dataroot ./datasets/shp2gir_coco --model insta_gan --name shp2gir_coco_instagan --loadSizeH 220 --loadSizeW 220 --fineSizeH 200 --fineSizeW 200
 python train.py --dataroot ./datasets/car2tank --model insta_gan --name car2tank_instagan --loadSizeH 64 --loadSizeW 64 --fineSizeH 64 --fineSizeW 64 --serial_batches
 python train.py --dataroot ./datasets/car2tank --model insta_gan --name car2tank_instagan --loadSizeH 128 --loadSizeW 128 --fineSizeH 128 --fineSizeW 128  --serial_batches
 
